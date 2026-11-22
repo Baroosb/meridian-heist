@@ -8,6 +8,7 @@ import { createGuard, updateGuard } from './guards.js';
 import { createCamera, updateCamera, cameraSees } from './cameras.js';
 import { laserHitsPlayer, laserSwitchNear } from './lasers.js';
 import { createPlayer, updatePlayer } from './player.js';
+import { coinDrawing, coinLanding, createCoin, updateCoins } from './tools.js';
 import { createAlarm, updateAlarm } from './alarm.js';
 import {
   createAudio,
@@ -46,6 +47,7 @@ export function createGame() {
     timeLeft: TUNE.timeLimitSec,
     now: 0,
     smoke: [],
+    coins: [],
     laserDisabledUntil: 0,
     laserGraceUntil: 0,
     diamondTaken: false,
@@ -71,6 +73,7 @@ function loadFloor(game, index) {
   game.cameras = game.floor.cameras.map(createCamera);
   game.player = createPlayer(game.floor.spawn.x, game.floor.spawn.y);
   game.smoke = [];
+  game.coins = [];
   game.laserDisabledUntil = 0;
   game.laserGraceUntil = 0;
   game.diamondTaken = game.floor.loot.some((item) => item.kind === 'diamond' && item.taken);
@@ -153,6 +156,18 @@ function updatePlay(game, dt) {
 
   updatePlayer(game.player, dt, input, game.floor);
 
+  // Decoy coins: age them, and let every live coin hold the eye of the guards
+  // near it (refreshed while the coin glints, so a stare lasts as long as it does).
+  game.coins = updateCoins(game.coins, dt);
+  for (const guard of game.guards) {
+    const coin = coinDrawing(guard, game.coins);
+    if (coin) {
+      guard.coinX = coin.x;
+      guard.coinY = coin.y;
+      guard.distractT = Math.max(guard.distractT, 0.25);
+    }
+  }
+
   let guardSeen = false;
   for (const guard of game.guards) {
     if (updateGuard(guard, dt, game.player, game.floor, game.smoke)) guardSeen = true;
@@ -193,6 +208,12 @@ function updatePlay(game, dt) {
     game.player.smoke -= 1;
     game.smoke.push({ x: game.player.x, y: game.player.y, r: TUNE.smokeRadius, t: TUNE.smokeSeconds });
     setHint(game, 'SMOKE OUT — CONES CANNOT SEE THROUGH IT', 2);
+  }
+  if (input.wasPressed('KeyF') && game.player.coins > 0) {
+    game.player.coins -= 1;
+    const land = coinLanding(game.player);
+    game.coins.push(createCoin(land.x, land.y));
+    setHint(game, 'COIN TOSSED — GUARDS ARE LOOKING AT IT', 2);
   }
   game.smoke = game.smoke.filter((s) => {
     s.t -= dt;

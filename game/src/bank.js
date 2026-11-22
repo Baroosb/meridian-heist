@@ -57,8 +57,12 @@ function floorOne() {
     guards: [
       { x: 350, y: 180, waypoints: [[350, 180], [950, 180], [950, 250], [350, 250]], speed: 62, name: 'R. KANE' },
       { x: 420, y: 620, waypoints: [[420, 620], [860, 620]], speed: 58, name: 'M. ORTIZ' },
+      { x: 200, y: 420, waypoints: [[200, 420], [1080, 420]], speed: 60, name: 'J. MERCER' },
     ],
-    cameras: [{ x: 80, y: 110, base: 0.7, sweep: 0.6, period: 6, phase: 0 }],
+    cameras: [
+      { x: 80, y: 110, base: 0.7, sweep: 0.6, period: 6, phase: 0 },
+      { x: 1200, y: 110, base: Math.PI - 0.7, sweep: 0.6, period: 7, phase: 2 },
+    ],
     loot: [
       { x: 350, y: 250, value: 500, kind: 'cash', taken: false },
       { x: 930, y: 250, value: 500, kind: 'cash', taken: false },

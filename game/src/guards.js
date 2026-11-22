@@ -14,6 +14,9 @@ export function createGuard(def) {
     name: def.name,
     alert: 0, // seconds left of chasing the player
     seen: false, // the player is inside this guard's cone right now
+    distractT: 0, // seconds left of staring at a decoy coin
+    coinX: 0, // the coin he is staring at (set while distractT is live)
+    coinY: 0,
     radius: 13,
   };
 }
@@ -33,6 +36,14 @@ export function updateGuard(guard, dt, player, floor, smoke) {
   guard.seen = seen;
   if (seen) guard.alert = 2.5;
   if (guard.alert > 0) guard.alert -= dt;
+  if (guard.distractT > 0) guard.distractT -= dt;
+
+  // A live decoy coin holds his eye: he stands and stares at it, cone and all,
+  // unless he is already chasing the thief.
+  if (guard.alert <= 0 && guard.distractT > 0) {
+    guard.dir = Math.atan2(guard.coinY - guard.y, guard.coinX - guard.x);
+    return seen;
+  }
 
   let tx;
   let ty;

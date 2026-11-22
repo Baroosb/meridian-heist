@@ -16,6 +16,7 @@ function loadFloorInto(game, index) {
   game.cameras = game.floor.cameras.map(createCamera);
   game.player = createPlayer(game.floor.spawn.x, game.floor.spawn.y);
   game.smoke = [];
+  game.coins = [];
   game.laserDisabledUntil = 0;
   game.laserGraceUntil = 0;
   game.alarm = createAlarm();
@@ -117,5 +118,16 @@ export function stageShot(name, game) {
   game.guards[1].dir = Math.PI; // west, cone sweeping past Vex
   game.guards[0].seen = false;
   game.guards[1].seen = false;
+  // The decoy coin at work: Mercer has stopped mid-patrol to stare at it while
+  // Vex crosses behind him — the tool, shown in the cover frame itself.
+  game.coins = [{ x: 330, y: 452, t: 4 }];
+  game.player.coins = 2;
+  game.guards[2].x = 470;
+  game.guards[2].y = 420;
+  game.guards[2].coinX = 330;
+  game.guards[2].coinY = 452;
+  game.guards[2].distractT = 2;
+  game.guards[2].dir = Math.atan2(452 - 420, 330 - 470);
+  game.guards[2].seen = false;
   syncCameras(game);
 }

@@ -87,9 +87,11 @@ export function drawHUD(ctx, game) {
   ctx.fillText('LOOT  ' + money(loot), 1120, 20);
   ctx.fillStyle = timeLeft <= 60 ? COLORS.red : '#e8e2d2';
   ctx.fillText('TIME  ' + formatTime(timeLeft), 1120, 44);
+  // The tools at a cost, bottom-left of the bar: smoke pellets and decoy coins.
+  ctx.textAlign = 'left';
   ctx.fillStyle = '#9fb4c0';
   ctx.font = '13px Arial, sans-serif';
-  ctx.fillText('SMOKE ×' + game.player.smoke + '  [Q]', 1240, 44);
+  ctx.fillText('SMOKE ×' + game.player.smoke + '  [Q]    COINS ×' + game.player.coins + '  [F]', 24, 46);
   ctx.restore();
 }
 

@@ -13,6 +13,7 @@ export function createPlayer(x, y) {
     moving: false,
     clickTarget: null, // {x, y} set by a mouse click, cleared by keys or arrival
     smoke: TUNE.smokeCount,
+    coins: TUNE.coinCount,
   };
 }
 

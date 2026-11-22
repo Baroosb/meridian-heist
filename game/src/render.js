@@ -188,7 +188,36 @@ function drawGuard(ctx, guard, now) {
     ctx.fillStyle = COLORS.red;
     ctx.font = 'bold 11px Arial, sans-serif';
     ctx.fillText('!', 0, guard.radius + 14);
+  } else if (guard.distractT > 0) {
+    // Staring at a decoy coin: a gold query over the cap.
+    ctx.fillStyle = COLORS.goldBright;
+    ctx.font = 'bold 13px Arial, sans-serif';
+    ctx.fillText('?', 0, guard.radius + 15);
   }
+  ctx.restore();
+}
+
+/** A tossed decoy coin: a small gold disc with a pulsing ring while it glints. */
+function drawCoin(ctx, coin, now) {
+  ctx.save();
+  ctx.translate(coin.x, coin.y);
+  const pulse = 0.5 + Math.sin(now * 6) * 0.3;
+  ctx.strokeStyle = `rgba(255, 215, 106, ${pulse})`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(0, 0, 13 + Math.sin(now * 6) * 2.5, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = COLORS.gold;
+  ctx.beginPath();
+  ctx.arc(0, 0, 7, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#6b4a14';
+  ctx.font = 'bold 9px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('$', 0, 3);
+  ctx.fillStyle = COLORS.goldBright;
+  ctx.font = 'bold 9px Arial, sans-serif';
+  ctx.fillText('DECOY COIN', 0, -18);
   ctx.restore();
 }
 
@@ -532,7 +561,7 @@ function drawTitle(ctx, game) {
   ctx.fillText('PRESS ENTER OR CLICK TO START', VIEW.width / 2, 732);
   ctx.fillStyle = '#9fb4c0';
   ctx.font = '15px Arial, sans-serif';
-  ctx.fillText('WASD / ARROWS move   ·   SHIFT sneak   ·   E grab / use   ·   Q smoke pellet   ·   P pause   ·   M mute', VIEW.width / 2, 756);
+  ctx.fillText('WASD / ARROWS move   ·   SHIFT sneak   ·   E grab / use   ·   Q smoke pellet   ·   F decoy coin   ·   P pause   ·   M mute', VIEW.width / 2, 756);
   ctx.restore();
 }
 
@@ -601,6 +630,7 @@ export function drawGame(ctx, game) {
     ctx.fill();
     ctx.restore();
   }
+  for (const coin of game.coins) drawCoin(ctx, coin, game.now);
   // Vision cones first, so walls drawn after them read as cover.
   for (const cam of game.cameras) {
     drawCone(ctx, cam.x, cam.y, cam.angle, TUNE.cameraHalfAngle, TUNE.cameraRange, COLORS.coneCam);
@@ -656,7 +686,7 @@ export function drawGame(ctx, game) {
     ctx.fillStyle = 'rgba(232, 226, 210, 0.55)';
     ctx.font = '12px Arial, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('WASD move · SHIFT sneak · E grab · Q smoke · P pause · M mute', VIEW.width / 2, VIEW.height - 8);
+    ctx.fillText('WASD move · SHIFT sneak · E grab · Q smoke · F coin · P pause · M mute', VIEW.width / 2, VIEW.height - 8);
     ctx.restore();
   }
 }
